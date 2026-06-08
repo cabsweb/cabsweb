@@ -111,16 +111,26 @@ a:hover { color: var(--accent-3); }
   padding: 0 0.15em;
 }
 .brand:hover { color: var(--text); }
-.nav { display: flex; gap: 0.4rem; align-items: center; }
+.nav { display: flex; gap: 0.3rem; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 .nav a {
   color: var(--muted);
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  padding: 0.45rem 0.85rem;
+  padding: 0.45rem 0.8rem;
   border-radius: 999px;
   transition: color 0.15s ease, background 0.15s ease;
+  white-space: nowrap;
 }
 .nav a:hover { color: var(--text); background: rgba(124,140,255,0.12); }
+.nav .nav-icon { display: inline-flex; align-items: center; padding: 0.4rem 0.55rem; }
+.nav .nav-icon svg { display: block; }
+
+@media (max-width: 780px) {
+  .site-header .bar { flex-wrap: wrap; gap: 0.5rem 0; padding: 0.8rem 1.5rem; }
+  .brand { font-size: 1rem; }
+  .nav { width: 100%; justify-content: flex-start; gap: 0.2rem; }
+  .nav a { padding: 0.4rem 0.7rem; font-size: 0.86rem; }
+}
 
 /* ---------- buttons ---------- */
 .btn {
