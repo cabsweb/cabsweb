@@ -1,0 +1,42 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getSpeakerProfiles } from '../../lib/db.ts';
+
+const profiles = await getSpeakerProfiles();
+---
+
+<Base title="Speakers · CABS AI & Digital Productivity Series">
+  <section class="section container" style="padding-top:2.5rem;">
+    <h2>Speakers</h2>
+    <p class="section-lead">
+      {profiles.length} {profiles.length === 1 ? 'speaker has' : 'speakers have'} contributed to the program. Click anyone to see their full profile and talks.
+    </p>
+
+    {profiles.length === 0 ? (
+      <p class="empty">No speakers yet — <a href="/submit">propose the first talk</a>.</p>
+    ) : (
+      <div class="talk-grid">
+        {profiles.map((p) => {
+          const topics = [...new Set(p.sessions.flatMap((s) => s.tags))].slice(0, 3);
+          const org = p.speaker.org;
+          const title = p.speaker.title;
+          return (
+            <a class="card talk-card" href={`/speakers/${p.slug}`} style="text-decoration:none;color:inherit;">
+              <img class="talk-photo" src={p.speaker.photo} alt={p.speaker.name} onerror="this.onerror=null;this.src='/speakers/placeholder.svg'" />
+              <div class="talk-info">
+                <h3 style="color:var(--text);">{p.speaker.name}</h3>
+                {(title || org) && (
+                  <div class="meta">{title}{title && org ? ' · ' : ''}{org}</div>
+                )}
+                <div class="meta">{p.sessions.length} talk{p.sessions.length === 1 ? '' : 's'}</div>
+                {topics.length > 0 && (
+                  <div class="tags">{topics.map((t) => <span class="tag">{t}</span>)}</div>
+                )}
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    )}
+  </section>
+</Base>
