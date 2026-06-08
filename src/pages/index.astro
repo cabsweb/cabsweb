@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import SessionCard from '../components/SessionCard.astro';
+import { getUpcoming, getArchive } from '../lib/db.ts';
+
+const upcoming = await getUpcoming();
+const recent = (await getArchive()).slice(0, 3);
+const next = upcoming[0];
+---
+
+<Base>
+  <section class="hero container">
+    <h1>The CABS AI &amp; Digital Productivity Series</h1>
+    <p>
+      A community knowledge hub where practitioners share what actually works in
+      AI and digital productivity. Talks are recorded, summarized, and archived
+      so the whole community keeps learning long after each session ends.
+    </p>
+    <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+      <a class="btn" href="/submit">Propose a talk</a>
+      <a class="btn secondary" href="/archive">Browse the archive</a>
+    </div>
+  </section>
+
+  {next && (
+    <section class="section container">
+      <h2>Next up</h2>
+      <article class="card" style="border-color:var(--accent);">
+        <div class="meta">{new Date(next.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' })}</div>
+        <h3 style="font-size:1.4rem;"><a href={`/events/${next.slug}`}>{next.title}</a></h3>
+        <p class="meta" style="font-size:0.95rem;">{next.speaker.name} · {next.speaker.org}</p>
+        <p>{next.abstract.slice(0, 220)}{next.abstract.length > 220 ? '…' : ''}</p>
+        <div><a class="btn" href={`/events/${next.slug}`}>Details &amp; registration</a></div>
+      </article>
+    </section>
+  )}
+
+  <section id="upcoming" class="section container">
+    <h2>Upcoming talks</h2>
+    {upcoming.length === 0 ? (
+      <p class="empty">No talks scheduled yet — <a href="/submit">be the first to propose one</a>.</p>
+    ) : (
+      <div class="grid">
+        {upcoming.map((s) => <SessionCard session={s} />)}
+      </div>
+    )}
+  </section>
+
+  {recent.length > 0 && (
+    <section class="section container">
+      <h2>Recently archived</h2>
+      <p class="section-lead">Recordings, slides, and AI-generated summaries from past sessions.</p>
+      <div class="grid">
+        {recent.map((s) => <SessionCard session={s} />)}
+      </div>
+    </section>
+  )}
+</Base>

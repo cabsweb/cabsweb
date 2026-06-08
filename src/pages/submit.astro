@@ -1,0 +1,111 @@
+---
+import Base from '../layouts/Base.astro';
+
+// Static site → no in-app server to receive the form. The portal submits to an
+// external form handler (Formspree) which emails the organizers and can redirect
+// back here with ?status=ok. Replace FORM_ENDPOINT with your Formspree form URL
+// (https://formspree.io → New form → copy the endpoint). The submitted fields
+// match the SubmissionInput shape, so an organizer can paste them into
+// data/sessions.json (or feed them to the scripts) and rebuild.
+//
+// On Netlify you can instead use Netlify Forms: add `data-netlify="true"` and a
+// hidden `form-name` field, and drop the action/endpoint.
+const FORM_ENDPOINT = 'https://formspree.io/f/mnjydayp';
+---
+
+<Base title="Propose a talk · CABS Series">
+  <section class="section container" style="padding-top:2.5rem;">
+    <h2>Propose a talk</h2>
+    <p class="section-lead">
+      Speaking in the AI &amp; Digital Productivity Series? Submit your details
+      below. Your proposal goes straight to the organizers — no more
+      back-and-forth emails and spreadsheets. An organizer reviews each proposal
+      and follows up to confirm a date.
+    </p>
+
+    <!-- Status banners are toggled client-side because a static page can't read
+         the query string at build time. -->
+    <div id="notice-ok" class="notice success" hidden>
+      ✅ Thanks — your proposal was received. An organizer will be in touch to
+      confirm your speaking date. You can close this page.
+    </div>
+    <div id="notice-error" class="notice error" hidden>
+      ⚠️ Something went wrong submitting your proposal. Please try again.
+    </div>
+
+    <form class="form" method="POST" action={FORM_ENDPOINT}>
+      <!-- Formspree: send a confirmation email + return the speaker here. -->
+      <input type="hidden" name="_subject" value="New CABS Series talk proposal" />
+      <input type="hidden" name="_next" value="https://cabsweb.net/submit?status=ok" />
+
+      <div class="row">
+        <div>
+          <label class="required" for="speakerName">Full name</label>
+          <input id="speakerName" name="speakerName" required />
+        </div>
+        <div>
+          <label class="required" for="speakerEmail">Email <span class="hint">(not shown publicly)</span></label>
+          <input id="speakerEmail" name="speakerEmail" type="email" required />
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="speakerTitle">Job title</label>
+          <input id="speakerTitle" name="speakerTitle" placeholder="e.g. Principal ML Engineer" />
+        </div>
+        <div>
+          <label for="speakerOrg">Organization</label>
+          <input id="speakerOrg" name="speakerOrg" />
+        </div>
+      </div>
+
+      <div>
+        <label class="required" for="speakerBio">Short bio <span class="hint">(2–4 sentences)</span></label>
+        <textarea id="speakerBio" name="speakerBio" required></textarea>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="photoUrl">Photo URL <span class="hint">(headshot)</span></label>
+          <input id="photoUrl" name="photoUrl" type="url" placeholder="https://…" />
+        </div>
+        <div>
+          <label for="linkedin">LinkedIn URL</label>
+          <input id="linkedin" name="linkedin" type="url" placeholder="https://linkedin.com/in/…" />
+        </div>
+      </div>
+
+      <div>
+        <label class="required" for="title">Talk title</label>
+        <input id="title" name="title" required />
+      </div>
+
+      <div>
+        <label class="required" for="abstract">Abstract <span class="hint">(what attendees will learn)</span></label>
+        <textarea id="abstract" name="abstract" required></textarea>
+      </div>
+
+      <div class="row">
+        <div>
+          <label class="required" for="preferredDate">Preferred date &amp; time</label>
+          <input id="preferredDate" name="preferredDate" type="datetime-local" required />
+        </div>
+        <div>
+          <label for="tags">Topics <span class="hint">(comma-separated)</span></label>
+          <input id="tags" name="tags" placeholder="RAG, Agents, Productivity" />
+        </div>
+      </div>
+
+      <div>
+        <button class="btn" type="submit">Submit proposal</button>
+      </div>
+    </form>
+  </section>
+
+  <script is:inline>
+    const status = new URLSearchParams(location.search).get('status');
+    if (status === 'ok') document.getElementById('notice-ok')?.removeAttribute('hidden');
+    if (status === 'error') document.getElementById('notice-error')?.removeAttribute('hidden');
+  </script>
+</Base>

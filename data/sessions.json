@@ -1,0 +1,104 @@
+[
+  {
+    "id": "2026-04-15-rag-pipelines",
+    "slug": "production-rag-pipelines",
+    "title": "From Demo to Production: Hardening RAG Pipelines for Life-Science Teams",
+    "abstract": "Retrieval-augmented generation looks effortless in a notebook and falls apart in production. This talk walks through the failure modes we hit shipping internal RAG assistants — chunking that destroys table semantics, retrievers that confidently surface the wrong SOP version, and evals that pass while users churn. We cover a practical hardening checklist: document-aware chunking, hybrid retrieval, citation-grounded answers, and a lightweight offline eval harness any team can stand up in a week.",
+    "speaker": {
+      "name": "Dr. Maya Okafor",
+      "title": "Principal ML Engineer",
+      "org": "Helix Bio",
+      "bio": "Maya leads applied ML at Helix Bio, where she builds retrieval and agent systems over regulated scientific content. Before Helix she spent six years in search infrastructure and has shipped RAG systems used by thousands of researchers daily.",
+      "photo": "/speakers/maya-okafor.jpg",
+      "links": {
+        "linkedin": "https://www.linkedin.com/in/example-maya",
+        "website": ""
+      }
+    },
+    "date": "2026-04-15T17:00:00Z",
+    "durationMinutes": 60,
+    "location": "Virtual (Zoom) + CABS HQ, Room 2A",
+    "tags": [
+      "RAG",
+      "LLMOps",
+      "Retrieval",
+      "Evaluation"
+    ],
+    "status": "archived",
+    "media": {
+      "recording": "https://videos.example.org/cabs/rag-pipelines.mp4",
+      "slides": "/slides/rag-pipelines.pdf",
+      "transcript": "/transcripts/rag-pipelines.txt",
+      "summary": "Maya argued that most RAG demos die in production for three reasons: naive chunking, version-blind retrieval, and evals that measure the wrong thing. Her recommended stack: document-aware (structure-preserving) chunking, hybrid BM25 + dense retrieval with a reranker, strict citation grounding so every claim links to a source span, and a small golden-set offline eval run on every change. Key takeaway — invest in evaluation before scaling retrieval; you cannot improve what you cannot measure."
+    },
+    "submittedAt": "2026-02-01T09:12:00Z"
+  },
+  {
+    "id": "2026-05-20-agent-guardrails",
+    "slug": "agent-guardrails-regulated",
+    "title": "Guardrails for Autonomous Agents in Regulated Environments",
+    "abstract": "Agents that take actions — not just answer questions — raise the stakes. In a GxP-adjacent setting, an over-eager agent that edits a record or sends an email is a compliance event, not a bug. This session presents a layered guardrail pattern: scoped tool permissions, human-in-the-loop approval gates for irreversible actions, full audit traces, and offline replay for incident review. We close with what we got wrong first.",
+    "speaker": {
+      "name": "Daniel Reyes",
+      "title": "Staff Engineer, AI Platform",
+      "org": "Northwind Therapeutics",
+      "bio": "Daniel builds the agent platform at Northwind Therapeutics, focused on safety, observability, and audit for AI systems that operate on regulated data. He is a frequent speaker on AI governance.",
+      "photo": "/speakers/daniel-reyes.jpg",
+      "links": {
+        "linkedin": "https://www.linkedin.com/in/example-daniel",
+        "website": ""
+      }
+    },
+    "date": "2026-05-20T17:00:00Z",
+    "durationMinutes": 60,
+    "location": "Virtual (Zoom)",
+    "tags": [
+      "Agents",
+      "Governance",
+      "Safety",
+      "Audit"
+    ],
+    "status": "published",
+    "media": {
+      "recording": "",
+      "slides": "",
+      "transcript": "",
+      "summary": ""
+    },
+    "submittedAt": "2026-03-10T14:30:00Z"
+  },
+  {
+    "id": "2026-06-17-prompt-to-product",
+    "slug": "prompt-to-product",
+    "title": "Prompt to Product: Designing AI Features People Actually Trust",
+    "abstract": "Great model output is not a great product. This talk is about the design layer on top of LLMs — how to set expectations, surface uncertainty, make AI output editable, and build the feedback loops that turn a clever prototype into a feature teams rely on. Examples are drawn from internal productivity tools used across research and operations.",
+    "speaker": {
+      "name": "Priya Nair",
+      "title": "Head of Product Design",
+      "org": "CABS Digital Productivity Working Group",
+      "bio": "Priya leads product design for internal AI tooling and chairs the CABS Digital Productivity Working Group. Her focus is human-AI interaction patterns that build durable user trust.",
+      "photo": "/speakers/priya-nair.jpg",
+      "links": {
+        "linkedin": "https://www.linkedin.com/in/example-priya",
+        "website": ""
+      }
+    },
+    "date": "2026-06-17T17:00:00Z",
+    "durationMinutes": 45,
+    "location": "Virtual (Zoom) + CABS HQ, Auditorium",
+    "tags": [
+      "Product",
+      "UX",
+      "Human-AI",
+      "Trust"
+    ],
+    "status": "scheduled",
+    "media": {
+      "recording": "",
+      "slides": "",
+      "transcript": "",
+      "summary": ""
+    },
+    "submittedAt": "2026-04-22T11:05:00Z"
+  }
+]

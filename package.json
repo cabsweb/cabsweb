@@ -1,0 +1,24 @@
+{
+  "name": "cabsweb",
+  "type": "module",
+  "version": "0.1.0",
+  "description": "AI-powered speaker operations and knowledge platform for the CABS AI & Digital Productivity Series",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "start": "astro preview",
+    "astro": "astro",
+    "generate": "node scripts/generate-content.mjs",
+    "summarize": "node scripts/summarize-recording.mjs"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "dependencies": {
+    "astro": "^5.0.0"
+  },
+  "devDependencies": {
+    "@anthropic-ai/sdk": "^0.65.0"
+  }
+}

@@ -1,0 +1,112 @@
+---
+import Base from '../../layouts/Base.astro';
+import { getSessions } from '../../lib/db.ts';
+import type { Session } from '../../lib/types.ts';
+import { allDrafts } from '../../lib/announcements.ts';
+import { formatDateLong, formatTime } from '../../lib/format.ts';
+
+// Static build: prerender one page per PUBLIC talk. `submitted` talks are
+// excluded here, so a pending proposal never gets a public page — the access
+// rule is enforced at build time by simply not generating the route.
+export async function getStaticPaths() {
+  const sessions = await getSessions({ status: ['scheduled', 'published', 'archived'] });
+  return sessions.map((s) => ({ params: { slug: s.slug }, props: { session: s } }));
+}
+
+const { session } = Astro.props as { session: Session };
+
+const isArchived = session.status === 'archived';
+const drafts = allDrafts(session);
+const showDrafts = !isArchived; // upcoming talks get LinkedIn/newsletter drafts
+---
+
+<Base title={`${session.title} · CABS Series`} description={session.abstract.slice(0, 160)}>
+  <section class="container event-head">
+    <img class="photo" src={session.speaker.photo} alt={session.speaker.name} />
+    <div style="flex:1;min-width:260px;">
+      <span class={`badge ${session.status}`}>{isArchived ? 'Archived' : 'Upcoming'}</span>
+      <h1 style="margin:0.5rem 0;">{session.title}</h1>
+      <p class="meta" style="font-size:1rem;">
+        {session.speaker.name}{session.speaker.title ? `, ${session.speaker.title}` : ''}
+        {session.speaker.org ? ` · ${session.speaker.org}` : ''}
+      </p>
+      {session.tags.length > 0 && (
+        <div class="tags" style="margin-top:0.5rem;">
+          {session.tags.map((t) => <span class="tag">{t}</span>)}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="container event-body">
+    <div class="prose">
+      {isArchived && session.media.summary && (
+        <>
+          <h2>Summary</h2>
+          <p>{session.media.summary}</p>
+        </>
+      )}
+
+      <h2>Abstract</h2>
+      <p>{session.abstract}</p>
+
+      <h2>About the speaker</h2>
+      <p>{session.speaker.bio}</p>
+      {(session.speaker.links.linkedin || session.speaker.links.website) && (
+        <p>
+          {session.speaker.links.linkedin && <a href={session.speaker.links.linkedin}>LinkedIn</a>}
+          {session.speaker.links.linkedin && session.speaker.links.website && ' · '}
+          {session.speaker.links.website && <a href={session.speaker.links.website}>Website</a>}
+        </p>
+      )}
+
+      {isArchived && (session.media.recording || session.media.slides || session.media.transcript) && (
+        <>
+          <h2>Materials</h2>
+          <p>
+            {session.media.recording && <a href={session.media.recording}>▶️ Recording</a>}
+            {session.media.recording && session.media.slides && ' · '}
+            {session.media.slides && <a href={session.media.slides}>📑 Slides</a>}
+            {(session.media.recording || session.media.slides) && session.media.transcript && ' · '}
+            {session.media.transcript && <a href={session.media.transcript}>📝 Transcript</a>}
+          </p>
+        </>
+      )}
+
+      {showDrafts && (
+        <>
+          <h2>Promotion drafts</h2>
+          <p class="meta">
+            Auto-generated, editable drafts for organizers. Review before posting.
+          </p>
+          <div class="drafts">
+            <div class="draft">
+              <h4>LinkedIn</h4>
+              <pre>{drafts.linkedin}</pre>
+            </div>
+            <div class="draft">
+              <h4>Newsletter</h4>
+              <pre>{drafts.newsletter}</pre>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+
+    <aside class="aside">
+      <dl>
+        <dt>Date</dt>
+        <dd>{formatDateLong(session.date)}</dd>
+        <dt>Time</dt>
+        <dd>{formatTime(session.date)} · {session.durationMinutes} min</dd>
+        <dt>Location</dt>
+        <dd>{session.location}</dd>
+      </dl>
+      {!isArchived && (
+        <a class="btn" style="margin-top:1.25rem;width:100%;text-align:center;" href={session.speaker.links.linkedin || '/#upcoming'}>
+          Add to calendar
+        </a>
+      )}
+    </aside>
+  </section>
+</Base>

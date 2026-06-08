@@ -1,0 +1,16 @@
+# build output
+dist/
+# generated types
+.astro/
+# dependencies
+node_modules/
+# environment
+.env
+.env.production
+# logs
+npm-debug.log*
+# generated AI content (review then commit selectively)
+src/generated/
+
+# os
+.DS_Store

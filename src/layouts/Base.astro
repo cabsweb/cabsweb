@@ -1,0 +1,46 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'CABS · AI & Digital Productivity Series',
+  description = 'The CABS AI & Digital Productivity Series — talks, speakers, and an open knowledge hub for AI, digital productivity, and life-science professionals.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="bar">
+        <a class="brand" href="/">CABS<span>·</span>Series</a>
+        <nav class="nav">
+          <a href="/#upcoming">Upcoming</a>
+          <a href="/archive">Archive</a>
+          <a href="/submit">Speak</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        CABS AI &amp; Digital Productivity Series · A community knowledge hub for AI,
+        digital productivity, and life-science professionals.
+      </div>
+    </footer>
+  </body>
+</html>
