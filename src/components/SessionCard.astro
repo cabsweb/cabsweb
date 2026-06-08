@@ -1,18 +1,20 @@
 ---
 import type { Session } from '../lib/types.ts';
 import { formatDateLong } from '../lib/format.ts';
+import { speakerSlug } from '../lib/db.ts';
 
 interface Props {
   session: Session;
 }
 const { session } = Astro.props;
+const speakerHref = `/speakers/${speakerSlug(session.speaker.name)}`;
 const isArchived = session.status === 'archived';
 const label = isArchived ? 'Archived' : 'Upcoming';
 const badgeClass = isArchived ? 'archived' : 'published';
 ---
 
 <article class="card talk-card">
-  <img class="talk-photo" src={session.speaker.photo} alt={session.speaker.name} />
+  <img class="talk-photo" src={session.speaker.photo} alt={session.speaker.name} onerror="this.onerror=null;this.src='/speakers/placeholder.svg'" />
   <div class="talk-info">
     <div class="talk-top">
       <span class="meta">{formatDateLong(session.date)}</span>
@@ -20,7 +22,7 @@ const badgeClass = isArchived ? 'archived' : 'published';
     </div>
     <h3><a href={`/events/${session.slug}`}>{session.title}</a></h3>
     <div class="talk-speaker">
-      <strong>{session.speaker.name}</strong>
+      <a href={speakerHref}><strong>{session.speaker.name}</strong></a>
       {session.speaker.org && <span class="meta"> · {session.speaker.org}</span>}
     </div>
     {session.tags.length > 0 && (

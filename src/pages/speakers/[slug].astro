@@ -1,0 +1,94 @@
+---
+import Base from '../../layouts/Base.astro';
+import type { SpeakerProfile } from '../../lib/types.ts';
+import { getSpeakerProfiles } from '../../lib/db.ts';
+import { formatDateLong } from '../../lib/format.ts';
+
+// One prerendered page per speaker, aggregating every public talk they gave.
+export async function getStaticPaths() {
+  const profiles = await getSpeakerProfiles();
+  return profiles.map((p) => ({ params: { slug: p.slug }, props: { profile: p } }));
+}
+
+const { profile } = Astro.props as { profile: SpeakerProfile };
+const { speaker, sessions } = profile;
+
+const now = Date.now();
+const talkCount = sessions.length;
+const archivedCount = sessions.filter((s) => s.status === 'archived').length;
+const upcomingCount = sessions.filter((s) => new Date(s.date).getTime() >= now).length;
+// Aggregate the topics this speaker has covered across all their talks.
+const topics = [...new Set(sessions.flatMap((s) => s.tags))];
+---
+
+<Base title={`${speaker.name} · CABS AI & Digital Productivity Series`} description={speaker.bio.slice(0, 160)}>
+  <section class="container event-head">
+    <img class="photo" src={speaker.photo} alt={speaker.name} onerror="this.onerror=null;this.src='/speakers/placeholder.svg'" />
+    <div style="flex:1;min-width:260px;">
+      <span class="eyebrow"><span class="dot"></span> Speaker</span>
+      <h1 style="margin:0.5rem 0;">{speaker.name}</h1>
+      <p class="meta" style="font-size:1.05rem;">
+        {speaker.title}{speaker.title && speaker.org ? ' · ' : ''}{speaker.org}
+      </p>
+      {(speaker.links.linkedin || speaker.links.website) && (
+        <p style="margin-top:0.5rem;">
+          {speaker.links.linkedin && <a href={speaker.links.linkedin} target="_blank" rel="noopener">LinkedIn ↗</a>}
+          {speaker.links.linkedin && speaker.links.website && ' · '}
+          {speaker.links.website && <a href={speaker.links.website} target="_blank" rel="noopener">Website ↗</a>}
+        </p>
+      )}
+    </div>
+  </section>
+
+  <section class="container event-body">
+    <div class="prose">
+      <h2>About</h2>
+      <p>{speaker.bio}</p>
+
+      <h2>Contributions to the program</h2>
+      <div class="talk-grid" style="margin-top:1rem;">
+        {sessions.map((s) => {
+          const isArchived = s.status === 'archived';
+          return (
+            <article class="card talk-card">
+              <div class="talk-info" style="width:100%;">
+                <div class="talk-top">
+                  <span class="meta">{formatDateLong(s.date)}</span>
+                  <span class={`badge ${isArchived ? 'archived' : 'published'}`}>{isArchived ? 'Archived' : 'Upcoming'}</span>
+                </div>
+                <h3><a href={`/events/${s.slug}`}>{s.title}</a></h3>
+                <p class="meta" style="margin:0;">{s.abstract.slice(0, 150)}{s.abstract.length > 150 ? '…' : ''}</p>
+                {s.tags.length > 0 && (
+                  <div class="tags">{s.tags.slice(0, 4).map((t) => <span class="tag">{t}</span>)}</div>
+                )}
+                {isArchived && s.media.recording && (
+                  <p style="margin:0.2rem 0 0;"><a href={s.media.recording} target="_blank" rel="noopener">▶ Watch the recording</a></p>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+
+    <aside class="aside">
+      <dl>
+        <dt>Talks given</dt>
+        <dd>{talkCount}</dd>
+        {upcomingCount > 0 && (<><dt>Upcoming</dt><dd>{upcomingCount}</dd></>)}
+        {archivedCount > 0 && (<><dt>In the archive</dt><dd>{archivedCount}</dd></>)}
+        {topics.length > 0 && (
+          <>
+            <dt>Topics</dt>
+            <dd>
+              <div class="tags" style="margin-top:0.3rem;">
+                {topics.map((t) => <span class="tag">{t}</span>)}
+              </div>
+            </dd>
+          </>
+        )}
+      </dl>
+      <a class="btn secondary" style="margin-top:1.25rem;width:100%;justify-content:center;" href="/#talks">← All talks</a>
+    </aside>
+  </section>
+</Base>

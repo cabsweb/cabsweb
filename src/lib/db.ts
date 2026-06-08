@@ -8,7 +8,7 @@
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
-import type { Session, SessionStatus, SubmissionInput } from './types.ts';
+import type { Session, SessionStatus, SubmissionInput, SpeakerProfile } from './types.ts';
 
 // Resolve the store from the project root (process.cwd()), NOT from this
 // module's path. The dev server and the bundled production server live at
@@ -70,6 +70,37 @@ function slugify(text: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '')
     .slice(0, 60);
+}
+
+/** URL-safe slug identifying a speaker by name (used for /speakers/<slug>). */
+export function speakerSlug(name: string): string {
+  return slugify(name);
+}
+
+/**
+ * Aggregate every public talk by speaker. A speaker who gives multiple talks
+ * appears once, with all their sessions attached (most recent first). The
+ * profile details (bio/title/org/photo/links) come from their latest session.
+ */
+export async function getSpeakerProfiles(): Promise<SpeakerProfile[]> {
+  const sessions = await getSessions({ status: ['scheduled', 'published', 'archived'] });
+  const groups = new Map<string, Session[]>();
+  for (const s of sessions) {
+    const slug = speakerSlug(s.speaker.name);
+    const list = groups.get(slug) ?? [];
+    list.push(s);
+    groups.set(slug, list);
+  }
+  return [...groups.entries()]
+    .map(([slug, list]) => {
+      const sorted = list.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      return { slug, speaker: sorted[0].speaker, sessions: sorted };
+    })
+    .sort((a, b) => a.speaker.name.localeCompare(b.speaker.name));
+}
+
+export async function getSpeakerProfile(slug: string): Promise<SpeakerProfile | undefined> {
+  return (await getSpeakerProfiles()).find((p) => p.slug === slug);
 }
 
 /**

@@ -58,6 +58,16 @@ export interface Session {
   submittedAt: string;
 }
 
+/** A speaker plus every public talk they have given to the program. */
+export interface SpeakerProfile {
+  /** URL-safe slug derived from the speaker name. */
+  slug: string;
+  /** Latest known profile details for this speaker. */
+  speaker: Speaker;
+  /** All of this speaker's public talks, most recent first. */
+  sessions: Session[];
+}
+
 /** Shape accepted by the public speaker submission form / API. */
 export interface SubmissionInput {
   speakerName: string;

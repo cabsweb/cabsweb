@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getSessions } from '../../lib/db.ts';
+import { getSessions, speakerSlug } from '../../lib/db.ts';
 import type { Session } from '../../lib/types.ts';
 import { allDrafts } from '../../lib/announcements.ts';
 import { formatDateLong, formatTime } from '../../lib/format.ts';
@@ -15,6 +15,7 @@ export async function getStaticPaths() {
 
 const { session } = Astro.props as { session: Session };
 
+const speakerHref = `/speakers/${speakerSlug(session.speaker.name)}`;
 const isArchived = session.status === 'archived';
 const drafts = allDrafts(session);
 const showDrafts = !isArchived; // upcoming talks get LinkedIn/newsletter drafts
@@ -22,7 +23,7 @@ const showDrafts = !isArchived; // upcoming talks get LinkedIn/newsletter drafts
 
 <Base title={`${session.title} · CABS Series`} description={session.abstract.slice(0, 160)}>
   <section class="container event-head">
-    <img class="photo" src={session.speaker.photo} alt={session.speaker.name} />
+    <img class="photo" src={session.speaker.photo} alt={session.speaker.name} onerror="this.onerror=null;this.src='/speakers/placeholder.svg'" />
     <div style="flex:1;min-width:260px;">
       <span class={`badge ${session.status}`}>{isArchived ? 'Archived' : 'Upcoming'}</span>
       <h1 style="margin:0.5rem 0;">{session.title}</h1>
@@ -51,14 +52,15 @@ const showDrafts = !isArchived; // upcoming talks get LinkedIn/newsletter drafts
       <p>{session.abstract}</p>
 
       <h2>About the speaker</h2>
+      <p><a href={speakerHref}><strong>{session.speaker.name}</strong></a>{session.speaker.title ? `, ${session.speaker.title}` : ''}{session.speaker.org ? ` · ${session.speaker.org}` : ''}</p>
       <p>{session.speaker.bio}</p>
-      {(session.speaker.links.linkedin || session.speaker.links.website) && (
-        <p>
-          {session.speaker.links.linkedin && <a href={session.speaker.links.linkedin}>LinkedIn</a>}
-          {session.speaker.links.linkedin && session.speaker.links.website && ' · '}
-          {session.speaker.links.website && <a href={session.speaker.links.website}>Website</a>}
-        </p>
-      )}
+      <p>
+        <a href={speakerHref}>View full speaker profile &amp; all their talks →</a>
+        {(session.speaker.links.linkedin || session.speaker.links.website) && ' · '}
+        {session.speaker.links.linkedin && <a href={session.speaker.links.linkedin} target="_blank" rel="noopener">LinkedIn ↗</a>}
+        {session.speaker.links.linkedin && session.speaker.links.website && ' · '}
+        {session.speaker.links.website && <a href={session.speaker.links.website} target="_blank" rel="noopener">Website ↗</a>}
+      </p>
 
       {isArchived && (session.media.recording || session.media.slides || session.media.transcript) && (
         <>
