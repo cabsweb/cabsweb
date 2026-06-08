@@ -102,7 +102,8 @@ const FORM_ENDPOINT = 'https://formspree.io/f/mnjydayp';
       <div class="row">
         <div>
           <label class="required" for="preferredDate">Preferred date &amp; time</label>
-          <input id="preferredDate" name="preferredDate" type="datetime-local" required />
+          <input id="preferredDate" name="preferredDate" type="datetime-local" step="900" required />
+          <p class="hint" style="margin:0.4rem 0 0;">Pick a future weekday. Talks usually run 45–60 min; we'll confirm the final slot with you.</p>
         </div>
         <div>
           <label for="tags">Topics <span class="hint">(comma-separated)</span></label>
@@ -120,6 +121,21 @@ const FORM_ENDPOINT = 'https://formspree.io/f/mnjydayp';
     const status = new URLSearchParams(location.search).get('status');
     if (status === 'ok') document.getElementById('notice-ok')?.removeAttribute('hidden');
     if (status === 'error') document.getElementById('notice-error')?.removeAttribute('hidden');
+
+    // Prevent past dates: set the picker's minimum to "now" in the visitor's
+    // local time, and default it to the next weekday at 5pm as a helpful start.
+    const dateInput = document.getElementById('preferredDate');
+    if (dateInput) {
+      const local = (d) => {
+        const t = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+        return t.toISOString().slice(0, 16);
+      };
+      dateInput.min = local(new Date());
+      const d = new Date();
+      d.setDate(d.getDate() + (((5 - d.getDay()) % 7) || 7)); // next Friday
+      d.setHours(17, 0, 0, 0);
+      if (!dateInput.value) dateInput.value = local(d);
+    }
 
     // Reflect the chosen headshot filename in the drop zone, and guard size.
     const fileInput = document.getElementById('headshot');
