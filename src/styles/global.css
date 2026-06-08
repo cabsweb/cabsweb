@@ -262,6 +262,28 @@ a:hover { color: var(--accent-3); }
   border: 1px solid var(--border-strong);
 }
 
+/* ---------- combined talks list: 2 per row, horizontal cards ---------- */
+.talk-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin-top: 1.5rem;
+}
+@media (max-width: 720px) { .talk-grid { grid-template-columns: 1fr; } }
+
+.talk-card { flex-direction: row; align-items: flex-start; gap: 1.1rem; padding: 1.3rem; }
+.talk-photo {
+  width: 76px; height: 76px; flex: 0 0 76px;
+  border-radius: 16px; object-fit: cover;
+  background: var(--grad-soft); border: 1px solid var(--border-strong);
+}
+.talk-info { display: flex; flex-direction: column; gap: 0.45rem; min-width: 0; }
+.talk-top { display: flex; align-items: center; justify-content: space-between; gap: 0.6rem; }
+.talk-top .meta { font-size: 0.82rem; }
+.talk-card h3 { font-size: 1.05rem; line-height: 1.3; }
+.talk-speaker { font-size: 0.92rem; color: var(--text); }
+.talk-speaker .meta { color: var(--muted); }
+
 /* featured "next up" card */
 .card.featured {
   border: 1px solid var(--border-strong);

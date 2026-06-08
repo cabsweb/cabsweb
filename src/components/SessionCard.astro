@@ -6,30 +6,27 @@ interface Props {
   session: Session;
 }
 const { session } = Astro.props;
-const statusLabel: Record<string, string> = {
-  scheduled: 'Scheduled',
-  published: 'Upcoming',
-  archived: 'Archived',
-  submitted: 'Pending',
-};
+const isArchived = session.status === 'archived';
+const label = isArchived ? 'Archived' : 'Upcoming';
+const badgeClass = isArchived ? 'archived' : 'published';
 ---
 
-<article class="card">
-  <div class="meta" style="display:flex;justify-content:space-between;align-items:center;">
-    <span>{formatDateLong(session.date)}</span>
-    <span class={`badge ${session.status}`}>{statusLabel[session.status]}</span>
-  </div>
-  <h3><a href={`/events/${session.slug}`}>{session.title}</a></h3>
-  {session.tags.length > 0 && (
-    <div class="tags">
-      {session.tags.slice(0, 4).map((t) => <span class="tag">{t}</span>)}
+<article class="card talk-card">
+  <img class="talk-photo" src={session.speaker.photo} alt={session.speaker.name} />
+  <div class="talk-info">
+    <div class="talk-top">
+      <span class="meta">{formatDateLong(session.date)}</span>
+      <span class={`badge ${badgeClass}`}>{label}</span>
     </div>
-  )}
-  <div class="speaker">
-    <img src={session.speaker.photo} alt={session.speaker.name} class="avatar" />
-    <div>
-      <div style="font-weight:600;font-size:0.92rem;">{session.speaker.name}</div>
-      <div class="meta">{session.speaker.org}</div>
+    <h3><a href={`/events/${session.slug}`}>{session.title}</a></h3>
+    <div class="talk-speaker">
+      <strong>{session.speaker.name}</strong>
+      {session.speaker.org && <span class="meta"> · {session.speaker.org}</span>}
     </div>
+    {session.tags.length > 0 && (
+      <div class="tags">
+        {session.tags.slice(0, 3).map((t) => <span class="tag">{t}</span>)}
+      </div>
+    )}
   </div>
 </article>

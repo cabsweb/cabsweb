@@ -1,11 +1,19 @@
 ---
 import Base from '../layouts/Base.astro';
 import SessionCard from '../components/SessionCard.astro';
-import { getUpcoming, getArchive } from '../lib/db.ts';
+import { getSessions } from '../lib/db.ts';
 
-const upcoming = await getUpcoming();
-const recent = (await getArchive()).slice(0, 3);
-const next = upcoming[0];
+// One combined list of every public talk — upcoming first (soonest first),
+// then past talks (most recent first).
+const all = await getSessions({ status: ['scheduled', 'published', 'archived'] });
+const now = Date.now();
+const upcoming = all
+  .filter((s) => new Date(s.date).getTime() >= now)
+  .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+const past = all
+  .filter((s) => new Date(s.date).getTime() < now)
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+const talks = [...upcoming, ...past];
 ---
 
 <Base>
@@ -19,44 +27,21 @@ const next = upcoming[0];
     </p>
     <div class="hero-actions">
       <a class="btn" href="/submit">Propose a talk →</a>
-      <a class="btn secondary" href="/archive">Browse the archive</a>
+      {talks.length > 0 && <a class="btn secondary" href="#talks">Browse talks</a>}
     </div>
   </section>
 
-  {next && (
-    <section class="section container">
-      <h2>Next up</h2>
-      <article class="card featured">
-        <div class="meta" style="display:flex;justify-content:space-between;align-items:center;">
-          <span>{new Date(next.date).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'UTC' })}</span>
-          <span class="badge published">Upcoming</span>
-        </div>
-        <h3><a href={`/events/${next.slug}`}>{next.title}</a></h3>
-        <p class="meta" style="font-size:0.95rem;">{next.speaker.name} · {next.speaker.org}</p>
-        <p style="color:#d6dcf2;">{next.abstract.slice(0, 220)}{next.abstract.length > 220 ? '…' : ''}</p>
-        <div><a class="btn" href={`/events/${next.slug}`}>Details &amp; registration →</a></div>
-      </article>
-    </section>
-  )}
-
-  <section id="upcoming" class="section container">
-    <h2>Upcoming talks</h2>
-    {upcoming.length === 0 ? (
-      <p class="empty">No talks scheduled yet — <a href="/submit">be the first to propose one</a>.</p>
+  <section id="talks" class="section container">
+    <h2>Talks &amp; speakers</h2>
+    <p class="section-lead">
+      {upcoming.length} upcoming · {past.length} in the archive — all in one place.
+    </p>
+    {talks.length === 0 ? (
+      <p class="empty">No talks yet — <a href="/submit">be the first to propose one</a>.</p>
     ) : (
-      <div class="grid">
-        {upcoming.map((s) => <SessionCard session={s} />)}
+      <div class="talk-grid">
+        {talks.map((s) => <SessionCard session={s} />)}
       </div>
     )}
   </section>
-
-  {recent.length > 0 && (
-    <section class="section container">
-      <h2>Recently archived</h2>
-      <p class="section-lead">Recordings, slides, and AI-generated summaries from past sessions.</p>
-      <div class="grid">
-        {recent.map((s) => <SessionCard session={s} />)}
-      </div>
-    </section>
-  )}
 </Base>
