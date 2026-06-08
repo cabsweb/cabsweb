@@ -336,6 +336,8 @@ a:hover { color: var(--accent-3); }
 .event-body .aside dt:first-child { margin-top: 0; }
 .event-body .aside dd { margin: 0.2rem 0 0; font-size: 0.98rem; }
 @media (max-width: 760px) { .event-body { grid-template-columns: 1fr; gap: 1.5rem; } }
+.cal-actions { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 1.4rem; }
+.cal-actions .btn { width: 100%; justify-content: center; }
 
 /* ---------- forms ---------- */
 .form { display: grid; gap: 1.1rem; max-width: 660px; }

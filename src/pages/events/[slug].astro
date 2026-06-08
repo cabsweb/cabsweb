@@ -3,6 +3,7 @@ import Base from '../../layouts/Base.astro';
 import { getSessions, speakerSlug } from '../../lib/db.ts';
 import type { Session } from '../../lib/types.ts';
 import { allDrafts } from '../../lib/announcements.ts';
+import { googleCalendarUrl } from '../../lib/calendar.ts';
 import { formatDateLong, formatTime } from '../../lib/format.ts';
 
 // Static build: prerender one page per PUBLIC talk. `submitted` talks are
@@ -105,9 +106,15 @@ const showDrafts = !isArchived; // upcoming talks get LinkedIn/newsletter drafts
         <dd>{session.location}</dd>
       </dl>
       {!isArchived && (
-        <a class="btn" style="margin-top:1.25rem;width:100%;text-align:center;" href={session.speaker.links.linkedin || '/#upcoming'}>
-          Add to calendar
-        </a>
+        <div class="cal-actions">
+          <a class="btn" href={`/events/${session.slug}.ics`} download={`${session.slug}.ics`}>
+            📅 Add to calendar
+          </a>
+          <a class="btn secondary" href={googleCalendarUrl(session)} target="_blank" rel="noopener">
+            Google Calendar ↗
+          </a>
+          <p class="hint" style="text-align:center;margin:0.2rem 0 0;">Apple Calendar &amp; Outlook use the .ics download</p>
+        </div>
       )}
     </aside>
   </section>
